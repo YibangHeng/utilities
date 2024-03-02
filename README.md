@@ -1,2 +1,3 @@
 # utilities
-Some useful stand-alone scripts.
+
+This repository contains some useful stand-alone scripts.
