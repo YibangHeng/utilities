@@ -9,6 +9,7 @@ Categorize files by specified date in a folder.
 import argparse
 import datetime
 import os
+import sys
 
 
 def get_file_list(pwd: str):
@@ -97,11 +98,20 @@ def do_move(pwd: str, group_info: dict):
     for time_string, files in group_info.items():
         # Create a new folder if not exists.
         if not os.path.exists(os.path.join(pwd, time_string)):
-            os.mkdir(os.path.join(pwd, time_string))
+            try:
+                os.mkdir(os.path.join(pwd, time_string))
+            except PermissionError:
+                print(f"Permission denied for creating: {os.path.join(pwd, time_string)}", file = sys.stderr)
+                continue
+            except FileExistsError:
+                continue
 
         # Do move.
         for file in files:
-            os.rename(os.path.join(pwd, file), os.path.join(pwd, time_string, file))
+            try:
+                os.rename(os.path.join(pwd, file), os.path.join(pwd, time_string, file))
+            except PermissionError:
+                print(f"Permission denied for moving: {os.path.join(pwd, file)}", file = sys.stderr)
 
 
 if __name__ == "__main__":
