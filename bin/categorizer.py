@@ -3,7 +3,7 @@
 """
 Categorize files by specified date in a folder.
 
-./categorizer.py [date_string] [folder_path]
+./categorizer.py [folder_path] [date_string] [-s]
 """
 
 import argparse
@@ -95,7 +95,7 @@ def do_move(pwd: str, group_info: dict):
     """
 
     for time_string, files in group_info.items():
-        # Create new folder if not exists.
+        # Create a new folder if not exists.
         if not os.path.exists(os.path.join(pwd, time_string)):
             os.mkdir(os.path.join(pwd, time_string))
 
@@ -106,20 +106,30 @@ def do_move(pwd: str, group_info: dict):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Categorize files by specified date in a folder."
+        description = "Categorize files by specified date in a folder."
+    )
+
+    parser.add_argument(
+        "folder_path",
+        type = str,
+        nargs = "?",
+        help = "Folder path.",
+        default = "."
     )
 
     parser.add_argument(
         "date_string",
-        type=str,
-        help="Date string in format. See https://strftime.org/ for details.",
-        default="%Y%m"
+        type = str,
+        nargs = "?",
+        help = "Date string in format. See https://strftime.org/ for details.",
+        default = "%Y%m"
     )
+
     parser.add_argument(
-        "folder_path",
-        type=str,
-        help="Folder path.",
-        default="."
+        "-s",
+        "--simulation",
+        action = "store_true",
+        help = "Do not move files actually, just print group info."
     )
 
     args = parser.parse_args()
@@ -129,4 +139,5 @@ if __name__ == "__main__":
 
     print_group_info(group_by_date(pwd, get_file_list(pwd), args.date_string))
 
-    do_move(pwd, group_by_date(pwd, get_file_list(pwd), args.date_string))
+    if not args.simulation:
+        do_move(pwd, group_by_date(pwd, get_file_list(pwd), args.date_string))
